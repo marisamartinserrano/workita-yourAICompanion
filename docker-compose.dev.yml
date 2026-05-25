@@ -1,0 +1,10 @@
+services:
+  server:
+    build: .
+    command: npx tsx watch server/index.ts
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      FRONTEND_URL: http://localhost:5173

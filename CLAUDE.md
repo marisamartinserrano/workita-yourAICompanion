@@ -12,6 +12,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Application Tracking** — Keep track of all job applications and their status throughout the selection process.
 - **Interview Preparation** — AI-powered guidance to help candidates prepare for each stage of the interview process.
 
+### Journeys
+Each journey is designed to support users in different stages of their job search, from registration and onboarding to applying for specific roles. The app leverages AI to analyze user profiles, job descriptions, and provide personalized recommendations to enhance the user's chances of success in their job applications.
+Each journey will be presented in the UI as a separate section or tab, allowing users to easily navigate between them and access the specific features and guidance they need at each stage of their job search process.
+These are the main user journeys that the app supports:
+**Registration / Log in**
+- Users can register and log in using Google SSO, providing a seamless and secure authentication process.
+**Onboarding**
+**New Candidature**
+**Selection process**
+**Closing**
+**Glossary of key terms and concepts**
+**Quizzes**
+
 ## Technology Stack
 
 | Layer | Technology |
