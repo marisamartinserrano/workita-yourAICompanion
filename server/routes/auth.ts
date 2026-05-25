@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, Application, Response } from 'express'
 import passport from 'passport'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import jwt from 'jsonwebtoken'
@@ -7,9 +7,8 @@ import { users } from '../db/schema.js'
 import { eq } from 'drizzle-orm'
 import { randomUUID } from 'crypto'
 import { requireAuth, AuthRequest } from '../middleware/auth.js'
-import { Response } from 'express'
 
-export function setupAuth(app: ReturnType<typeof import('express').default>) {
+export function setupAuth(app: Application): void {
   passport.use(
     new GoogleStrategy(
       {
