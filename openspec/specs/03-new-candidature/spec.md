@@ -10,9 +10,18 @@ New Candidature is the core AI-powered feature of Workita. The user submits a jo
 
 **Input**
 - FR-01: The user MUST be able to start a new candidature by providing:
-  - A link to the job description (LinkedIn, company website, etc.) — optional
-  - The full job description text — required
-- FR-02: The app MUST validate that a job description is provided before triggering analysis.
+  - A link to the job description (LinkedIn, company website, etc.) — **required**
+  - Company — optional (AI-filled from URL if left blank)
+  - Role — optional (AI-filled from URL if left blank)
+  - Seniority — optional (AI-filled from URL if left blank)
+  - Location — optional (AI-filled from URL if left blank)
+  - Work mode (On-site / Hybrid / Remote) — optional (AI-filled from URL if left blank)
+  - Industry — optional (AI-filled from URL if left blank)
+  - Labels — optional, multiple free-text tags
+  - Status — optional, defaults to "Applied"
+  - Additional info — optional free-text
+- FR-01a: The form is embedded in the Candidatures hub page at `/candidatures`, not on a standalone page.
+- FR-02: The app MUST validate that the URL field is provided before saving. The full job description text is no longer a required input — it is fetched server-side from the URL.
 
 **AI Analysis**
 - FR-03: The AI MUST extract and present a structured company overview including: company name, products/services, industry, financial health indicators, and recent news.
@@ -41,10 +50,10 @@ New Candidature is the core AI-powered feature of Workita. The user submits a jo
 
 ## Scenarios
 
-### Scenario 1: Successful candidature creation
-**Given** the user has a complete profile and pastes a job description  
-**When** they click "Analyse Job"  
-**Then** the AI returns: company summary, % match, strengths, gaps, differentiators, ATS keywords, CV recommendations, LinkedIn recommendations — all displayed on screen and saved to the database
+### Scenario 1: Successful candidature creation with URL only
+**Given** the user has a complete profile and enters a job posting URL  
+**When** they click "Save candidature"  
+**Then** the server fetches the URL, AI extracts company, role, seniority, location, work mode, and industry; a full analysis (% match, strengths, gaps, differentiators, ATS keywords, CV recs, LinkedIn recs) is run and the candidature appears in the list
 
 ### Scenario 2: User without a profile
 **Given** the user has not completed onboarding  
@@ -56,18 +65,29 @@ New Candidature is the core AI-powered feature of Workita. The user submits a jo
 **When** the user clicks "Track Selection Process"  
 **Then** they are taken to the Selection Process page for this candidature with all 10 stages pre-loaded
 
-### Scenario 4: Missing job description
-**Given** the user submits the form without pasting a job description  
-**When** they click "Analyse Job"  
+### Scenario 4: Missing URL
+**Given** the user submits the form without entering a URL  
+**When** they click "Save candidature"  
 **Then** a validation error is shown and no API call is made
 
 ## Acceptance Criteria
 
-- [ ] Job description text field is required; URL is optional
-- [ ] AI produces: company summary, % match, strengths, gaps, differentiators, ATS keywords, CV recs, LinkedIn recs
-- [ ] All analysis results are displayed clearly on screen
-- [ ] Candidature is saved to the database with full analysis JSON
-- [ ] 10 selection stages are auto-created; "Application submitted" is marked as completed
-- [ ] User is prompted to network with the hiring team
-- [ ] Navigation to Selection Process is available after analysis
-- [ ] Analysis works even without a candidate profile (with a notice)
+- [x] Job posting URL is required; all other fields are optional (AI-filled from URL)
+- [x] AI produces: company summary, role requirements, % match, strengths, gaps, differentiators, ATS keywords, CV recs, LinkedIn recs, networking guidance
+- [x] All analysis results are displayed clearly on screen
+- [x] Candidature is saved to the database with full analysis JSON
+- [x] 10 selection stages are auto-created; "Application submitted" is marked as completed
+- [x] User is prompted to network with the hiring team
+- [x] Navigation to Selection Process is available after analysis
+- [x] Analysis works even without a candidate profile (with a notice)
+
+## Implementation
+
+**Status:** ✅ Implemented — 2026-05-26
+
+**Notes:**
+- `analyzeJobFlow` extended with `roleRequirements` (`skills[]`, `experienceLevel`, `salary`) and `networkingGuidance` (`string[]`)
+- `POST /candidatures` returns `hasProfile: boolean` alongside the candidature record
+- Results view refactored into a `ResultsView` component; new panels: Role Requirements (skills as chips, experience + salary labels) and Networking Guidance (teal card, bulleted tips)
+- No-profile banner (dismissible, amber) links to `/onboarding`; hidden when `hasProfile` is true
+- Layout order: no-profile banner → header + match % → company summary → role requirements → strengths/gaps → differentiators/ATS → CV/LinkedIn recs → networking → CTA

@@ -20,7 +20,14 @@ export const profiles = pgTable('profiles', {
   salaryExpectations: text('salary_expectations'),
   preferredCompanies: text('preferred_companies'),
   cvText: text('cv_text'),
+  cvFileName: text('cv_file_name'),
+  cvFileData: text('cv_file_data'),
+  cvFileType: text('cv_file_type'),
+  cvAnalysisResult: jsonb('cv_analysis_result'),
+  cvAnalysisUpdatedAt: timestamp('cv_analysis_updated_at'),
   linkedinUrl: text('linkedin_url'),
+  linkedinAnalysisResult: jsonb('linkedin_analysis_result'),
+  linkedinAnalysisUpdatedAt: timestamp('linkedin_analysis_updated_at'),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
@@ -33,6 +40,16 @@ export const candidatures = pgTable('candidatures', {
   status: varchar('status', { length: 50 }).notNull().default('applied'),
   matchPercentage: integer('match_percentage'),
   analysis: jsonb('analysis'),
+  // Enriched metadata (candidatures-hub)
+  role: text('role'),
+  seniority: text('seniority'),
+  location: text('location'),
+  workMode: text('work_mode'),
+  industry: text('industry'),
+  labels: jsonb('labels'),
+  additionalInfo: text('additional_info'),
+  jobDescription: text('job_description'),
+  positionSummary: text('position_summary'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })

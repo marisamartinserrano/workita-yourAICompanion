@@ -2,40 +2,24 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
-const SELECTION_STAGES = [
-  'Application submitted',
-  'Interview with recruiter',
-  'Technical interview',
-  'Use case or assignment',
-  'Team interview',
-  'Manager interview',
-  'Client/Stakeholder interview',
-  'Cultural interview',
-  'Leadership interview',
-  'Offer received / Candidature rejected',
-]
-
-const STAGE_ICONS: Record<string, string> = {
-  'Application submitted': '📋',
-  'Interview with recruiter': '📞',
-  'Technical interview': '💻',
-  'Use case or assignment': '📝',
-  'Team interview': '👥',
-  'Manager interview': '🧑‍💼',
-  'Client/Stakeholder interview': '🤝',
-  'Cultural interview': '🌱',
-  'Leadership interview': '🏅',
-  'Offer received / Candidature rejected': '🏁',
-}
 
 const navItems = [
-  { to: '/dashboard',          label: 'Home',               icon: '🏠' },
-  { to: '/onboarding',         label: 'My Profile',         icon: '👤' },
-  { to: '/candidature/new',    label: 'New Candidature',    icon: '➕' },
-  { to: '/selection-process',  label: 'Selection Process',  icon: '🗂️', hasSubItems: true },
-  { to: '/closing',            label: 'Closing',            icon: '✅' },
-  { to: '/glossary',           label: 'Glossary',           icon: '📖' },
-  { to: '/quizzes',            label: 'Quizzes',            icon: '🧠' },
+  { to: '/dashboard',      label: 'Home',          icon: '🏠' },
+  { to: '/profile',        label: 'Profile',       icon: '👤', hasProfileSubItems: true },
+  { to: '/candidatures',   label: 'Candidatures',  icon: '📋', hasCandidatureSubItems: true },
+  { to: '/closing',        label: 'Closing',       icon: '✅' },
+  { to: '/glossary',       label: 'Glossary',      icon: '📖' },
+  { to: '/quizzes',        label: 'Quizzes',       icon: '🧠' },
+]
+
+const PROFILE_SUB_ITEMS = [
+  { to: '/profile',                    label: 'Job Preferences',   icon: '🎯' },
+  { to: '/profile/cv-analysis',        label: 'CV Analysis',       icon: '📄' },
+  { to: '/profile/linkedin-analysis',  label: 'LinkedIn Analysis', icon: '🔗' },
+]
+
+const CANDIDATURE_SUB_ITEMS = [
+  { to: '/candidatures', label: 'My Candidatures', icon: '📋' },
 ]
 
 interface SidebarProps {
@@ -47,19 +31,28 @@ function Sidebar({ collapsed = false, onClose }: SidebarProps) {
   const { user, logout } = useAuth()
   const location = useLocation()
 
-  const onSelectionRoute =
-    location.pathname.startsWith('/candidature/') ||
-    location.pathname === '/selection-process'
+  const onCandidatureRoute =
+    location.pathname.startsWith('/candidature') ||
+    location.pathname === '/candidatures'
 
-  const [selectionOpen, setSelectionOpen] = useState(onSelectionRoute)
+  const onProfileRoute = location.pathname.startsWith('/profile')
+
+  const [candidaturesOpen, setCandidaturesOpen] = useState(onCandidatureRoute)
+  const [profileOpen, setProfileOpen] = useState(onProfileRoute)
 
   useEffect(() => {
-    if (onSelectionRoute) setSelectionOpen(true)
-  }, [location.pathname, onSelectionRoute])
+    if (onCandidatureRoute) setCandidaturesOpen(true)
+  }, [location.pathname, onCandidatureRoute])
+
+  useEffect(() => {
+    if (onProfileRoute) setProfileOpen(true)
+  }, [location.pathname, onProfileRoute])
 
   const isActive = (path: string) =>
     location.pathname === path ||
-    (path !== '/dashboard' && location.pathname.startsWith(path))
+    (path === '/profile'      && location.pathname.startsWith('/profile')) ||
+    (path === '/candidatures' && onCandidatureRoute) ||
+    (path !== '/dashboard' && path !== '/profile' && path !== '/candidatures' && location.pathname.startsWith(path))
 
   const handleLogout = () => {
     logout()
@@ -80,7 +73,8 @@ function Sidebar({ collapsed = false, onClose }: SidebarProps) {
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-0.5" aria-label="Main navigation">
         {navItems.map((item) => {
           const active = isActive(item.to)
-          const isSelection = item.hasSubItems
+          const isProfile = item.hasProfileSubItems
+          const isCandidatures = item.hasCandidatureSubItems
 
           return (
             <div key={item.to}>
@@ -101,16 +95,33 @@ function Sidebar({ collapsed = false, onClose }: SidebarProps) {
                   {!collapsed && <span className="truncate">{item.label}</span>}
                 </Link>
 
-                {/* Toggle for Selection Process sub-stages */}
-                {isSelection && !collapsed && (
+                {/* Toggle for Profile sub-items */}
+                {isProfile && !collapsed && (
                   <button
-                    onClick={() => setSelectionOpen((o) => !o)}
-                    aria-expanded={selectionOpen}
-                    aria-label="Toggle selection process stages"
+                    onClick={() => setProfileOpen((o) => !o)}
+                    aria-expanded={profileOpen}
+                    aria-label="Toggle profile sections"
                     className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                   >
                     <svg
-                      className={`w-3.5 h-3.5 transition-transform duration-200 ${selectionOpen ? 'rotate-180' : ''}`}
+                      className={`w-3.5 h-3.5 transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                )}
+
+                {/* Toggle for Candidatures sub-items */}
+                {isCandidatures && !collapsed && (
+                  <button
+                    onClick={() => setCandidaturesOpen((o) => !o)}
+                    aria-expanded={candidaturesOpen}
+                    aria-label="Toggle candidatures sections"
+                    className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                  >
+                    <svg
+                      className={`w-3.5 h-3.5 transition-transform duration-200 ${candidaturesOpen ? 'rotate-180' : ''}`}
                       fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -119,20 +130,55 @@ function Sidebar({ collapsed = false, onClose }: SidebarProps) {
                 )}
               </div>
 
-              {/* Sub-stages */}
-              {isSelection && !collapsed && selectionOpen && (
+              {/* Profile sub-items */}
+              {isProfile && !collapsed && profileOpen && (
                 <ul className="mt-0.5 ml-3 pl-3 border-l-2 border-gray-100 space-y-0.5" role="list">
-                  {SELECTION_STAGES.map((stage) => (
-                    <li key={stage}>
-                      <span
-                        className="flex items-center gap-2 px-2 py-1.5 text-xs text-gray-500 rounded-lg"
-                        role="listitem"
-                      >
-                        <span className="shrink-0">{STAGE_ICONS[stage]}</span>
-                        <span className="truncate">{stage}</span>
-                      </span>
-                    </li>
-                  ))}
+                  {PROFILE_SUB_ITEMS.map((sub) => {
+                    const subActive = location.pathname === sub.to
+                    return (
+                      <li key={sub.to}>
+                        <Link
+                          to={sub.to}
+                          onClick={onClose}
+                          aria-current={subActive ? 'page' : undefined}
+                          className={`flex items-center gap-2 px-2 py-1.5 text-xs rounded-lg transition-colors ${
+                            subActive
+                              ? 'text-primary-700 font-semibold bg-primary-50'
+                              : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="shrink-0">{sub.icon}</span>
+                          <span className="truncate">{sub.label}</span>
+                        </Link>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+
+              {/* Candidatures sub-items */}
+              {isCandidatures && !collapsed && candidaturesOpen && (
+                <ul className="mt-0.5 ml-3 pl-3 border-l-2 border-gray-100 space-y-0.5" role="list">
+                  {CANDIDATURE_SUB_ITEMS.map((sub) => {
+                    const subActive = location.pathname === sub.to
+                    return (
+                      <li key={sub.to}>
+                        <Link
+                          to={sub.to}
+                          onClick={onClose}
+                          aria-current={subActive ? 'page' : undefined}
+                          className={`flex items-center gap-2 px-2 py-1.5 text-xs rounded-lg transition-colors ${
+                            subActive
+                              ? 'text-primary-700 font-semibold bg-primary-50'
+                              : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="shrink-0">{sub.icon}</span>
+                          <span className="truncate">{sub.label}</span>
+                        </Link>
+                      </li>
+                    )
+                  })}
                 </ul>
               )}
             </div>

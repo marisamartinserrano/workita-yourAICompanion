@@ -5,9 +5,10 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
-import Onboarding from './pages/Onboarding'
-import NewCandidature from './pages/NewCandidature'
-import SelectionProcessList from './pages/SelectionProcessList'
+import Profile from './pages/Profile'
+import CvAnalysis from './pages/CvAnalysis'
+import LinkedinAnalysis from './pages/LinkedinAnalysis'
+import Candidatures from './pages/Candidatures'
 import SelectionProcess from './pages/SelectionProcess'
 import Closing from './pages/Closing'
 import Glossary from './pages/Glossary'
@@ -37,15 +38,21 @@ export default function App() {
           <Route path="/dashboard" element={
             <ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>
           } />
-          <Route path="/onboarding" element={
-            <ProtectedRoute><Layout><Onboarding /></Layout></ProtectedRoute>
+          <Route path="/onboarding" element={<Navigate to="/profile" replace />} />
+          <Route path="/profile" element={
+            <ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>
           } />
-          <Route path="/candidature/new" element={
-            <ProtectedRoute><Layout><NewCandidature /></Layout></ProtectedRoute>
+          <Route path="/profile/cv-analysis" element={
+            <ProtectedRoute><Layout><CvAnalysis /></Layout></ProtectedRoute>
           } />
-          <Route path="/selection-process" element={
-            <ProtectedRoute><Layout><SelectionProcessList /></Layout></ProtectedRoute>
+          <Route path="/profile/linkedin-analysis" element={
+            <ProtectedRoute><Layout><LinkedinAnalysis /></Layout></ProtectedRoute>
           } />
+          <Route path="/candidatures" element={
+            <ProtectedRoute><Layout><Candidatures /></Layout></ProtectedRoute>
+          } />
+          <Route path="/candidature/new" element={<Navigate to="/candidatures" replace />} />
+          <Route path="/selection-process" element={<Navigate to="/candidatures" replace />} />
           <Route path="/candidature/:id" element={
             <ProtectedRoute><Layout><SelectionProcess /></Layout></ProtectedRoute>
           } />

@@ -5,10 +5,10 @@ import { interviewPrepFlow, glossaryFlow, quizFlow } from '../ai/flows.js'
 const router = Router()
 
 router.post('/interview-prep', requireAuth, async (req: AuthRequest, res: Response) => {
-  const { jobTitle, company, stage, candidateProfile } = req.body as {
-    jobTitle: string; company: string; stage: string; candidateProfile?: string
+  const { jobTitle, company, stage, candidateProfile, positionSummary } = req.body as {
+    jobTitle: string; company: string; stage: string; candidateProfile?: string; positionSummary?: string
   }
-  const result = await interviewPrepFlow({ jobTitle, company, stage, candidateProfile })
+  const result = await interviewPrepFlow({ jobTitle, company, stage, candidateProfile, positionSummary })
   res.json(result)
 })
 

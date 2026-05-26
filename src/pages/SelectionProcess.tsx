@@ -15,6 +15,7 @@ interface Candidature {
   company: string
   matchPercentage: number
   status: string
+  positionSummary?: string | null
   stages: Stage[]
   analysis: {
     strengths: string[]
@@ -55,6 +56,7 @@ export default function SelectionProcess() {
         jobTitle: candidature!.jobTitle,
         company: candidature!.company,
         stage: stage.stage,
+        positionSummary: candidature!.positionSummary ?? undefined,
       })
       setPrep(result)
     } catch (e) { console.error(e) }
