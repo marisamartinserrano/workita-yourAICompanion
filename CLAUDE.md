@@ -32,7 +32,7 @@ These are the main user journeys that the app supports:
 | Frontend | TypeScript |
 | Backend | Node.js |
 | Database | PostgreSQL |
-| AI Framework | Google Genkit (Google Gemini) |
+| AI Framework | Google Genkit (Google Gemini 2.5 Flash) |
 | Authentication | Google SSO (OAuth 2.0) |
 
 ## Running the App
