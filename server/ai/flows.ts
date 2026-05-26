@@ -113,6 +113,97 @@ Respond ONLY with valid JSON, no markdown.`,
   }
 )
 
+// Analyse a candidate CV: extract skills, experience, education, gaps, ATS feedback
+export const cvAnalysisFlow = ai.defineFlow(
+  {
+    name: 'cvAnalysis',
+    inputSchema: z.object({ cvText: z.string() }),
+    outputSchema: z.object({
+      skills: z.array(z.string()),
+      experience: z.array(z.string()),
+      education: z.array(z.string()),
+      gaps: z.array(z.object({ issue: z.string(), suggestion: z.string() })),
+      atsFeedback: z.array(z.object({
+        category: z.string(),
+        status: z.enum(['pass', 'warn', 'fail']),
+        message: z.string(),
+      })),
+    }),
+  },
+  async (input) => {
+    const { text } = await ai.generate({
+      prompt: `You are an expert CV analyst and career coach. Analyse this CV and return structured feedback.
+
+CV TEXT:
+${input.cvText}
+
+Return a JSON object with:
+- skills: array of identified skills (technical and soft)
+- experience: array of experience highlights (role, company, duration if present)
+- education: array of education qualifications
+- gaps: array of objects with "issue" (what's missing or weak) and "suggestion" (how to fix it)
+- atsFeedback: array of ATS checks, each with:
+  - category: e.g. "Formatting", "Keywords", "Structure", "Contact Info"
+  - status: "pass", "warn", or "fail"
+  - message: specific feedback for this check
+
+Provide 3-6 gaps and 5-8 ATS feedback items. Be specific and actionable.
+Respond ONLY with valid JSON, no markdown.`,
+    })
+    try {
+      return JSON.parse(text)
+    } catch {
+      throw new Error('Failed to parse CV analysis response')
+    }
+  }
+)
+
+// Generate LinkedIn profile improvement recommendations
+export const linkedinRecommendationsFlow = ai.defineFlow(
+  {
+    name: 'linkedinRecommendations',
+    inputSchema: z.object({
+      cvText: z.string(),
+      linkedinUrl: z.string().optional(),
+    }),
+    outputSchema: z.object({
+      recommendations: z.array(z.object({
+        text: z.string(),
+        rationale: z.string(),
+      })),
+      hasLinkedinUrl: z.boolean(),
+    }),
+  },
+  async (input) => {
+    const { text } = await ai.generate({
+      prompt: `You are a LinkedIn profile expert and career coach. Based on this candidate's CV, generate specific LinkedIn profile improvement recommendations.
+
+CV TEXT:
+${input.cvText}
+LinkedIn URL: ${input.linkedinUrl || 'Not provided'}
+
+Generate 5-8 specific, actionable recommendations to improve their LinkedIn profile. Focus on:
+- Profile headline and summary optimisation
+- Skills section (what to add, reorder, or remove)
+- Experience descriptions (keywords, achievements, ATS-friendliness)
+- Profile completeness (photo, banner, about section)
+- Consistency between CV and LinkedIn
+- Recruiter discoverability
+
+Return a JSON object with:
+- recommendations: array of objects with "text" (the recommendation) and "rationale" (why it matters for candidates)
+
+Respond ONLY with valid JSON, no markdown.`,
+    })
+    try {
+      const result = JSON.parse(text) as { recommendations: { text: string; rationale: string }[] }
+      return { ...result, hasLinkedinUrl: !!input.linkedinUrl }
+    } catch {
+      throw new Error('Failed to parse LinkedIn recommendations response')
+    }
+  }
+)
+
 // Generate a glossary for a job description
 export const glossaryFlow = ai.defineFlow(
   {
