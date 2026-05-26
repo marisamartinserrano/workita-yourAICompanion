@@ -7,7 +7,9 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Onboarding from './pages/Onboarding'
 import NewCandidature from './pages/NewCandidature'
+import SelectionProcessList from './pages/SelectionProcessList'
 import SelectionProcess from './pages/SelectionProcess'
+import Closing from './pages/Closing'
 import Glossary from './pages/Glossary'
 import Quizzes from './pages/Quizzes'
 
@@ -41,8 +43,14 @@ export default function App() {
           <Route path="/candidature/new" element={
             <ProtectedRoute><Layout><NewCandidature /></Layout></ProtectedRoute>
           } />
+          <Route path="/selection-process" element={
+            <ProtectedRoute><Layout><SelectionProcessList /></Layout></ProtectedRoute>
+          } />
           <Route path="/candidature/:id" element={
             <ProtectedRoute><Layout><SelectionProcess /></Layout></ProtectedRoute>
+          } />
+          <Route path="/closing" element={
+            <ProtectedRoute><Layout><Closing /></Layout></ProtectedRoute>
           } />
           <Route path="/glossary" element={
             <ProtectedRoute><Layout><Glossary /></Layout></ProtectedRoute>

@@ -64,25 +64,14 @@ The navigation menu is the persistent left-side panel that anchors every screen 
 
 ## Acceptance Criteria
 
-- [x] Navigation menu is visible on all authenticated pages
-- [x] Active menu item is highlighted
-- [x] All 7 top-level sections are present and clickable
-- [x] Selection Process sub-stages are accessible from the menu
-- [x] User name and avatar are displayed
-- [x] Logout works from the menu
-- [x] Menu is not shown on the Login page
-- [x] Navigation does not trigger a full page reload
-
-## Implementation
-
-**Status:** ✅ Implemented — 2026-05-26  
-**Commit:** `feat(nav): implement spec 00 — Navigation Menu`
-
-**Notes:**
-- Desktop (lg+): full sidebar w-64; Tablet (md): icon-only rail w-16; Mobile: hamburger + slide-over drawer
-- Selection Process sub-stages are collapsible; auto-expand when on `/candidature/*`
-- User avatar, name, email, and logout button live in the sidebar footer
-- `/selection-process` and `/closing` routes added; Closing page is a placeholder pending spec 05
+- [ ] Navigation menu is visible on all authenticated pages
+- [ ] Active menu item is highlighted
+- [ ] All 7 top-level sections are present and clickable
+- [ ] Selection Process sub-stages are accessible from the menu
+- [ ] User name and avatar are displayed
+- [ ] Logout works from the menu
+- [ ] Menu is not shown on the Login page
+- [ ] Navigation does not trigger a full page reload
 
 ## Out of Scope
 
