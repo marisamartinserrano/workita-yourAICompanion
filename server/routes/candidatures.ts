@@ -1,7 +1,7 @@
 import { Router, Response } from 'express'
 import { db } from '../db/index.js'
 import { candidatures, candidatureStages, profiles } from '../db/schema.js'
-import { eq } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import { randomUUID } from 'crypto'
 import { requireAuth, AuthRequest } from '../middleware/auth.js'
 import { analyzeJobFlow } from '../ai/flows.js'
@@ -21,9 +21,53 @@ const SELECTION_STAGES = [
   'Offer received',
 ]
 
+const INTERVIEW_STAGES = new Set([
+  'Interview with recruiter',
+  'Technical interview',
+  'Use case or assignment',
+  'Team interview',
+  'Manager interview',
+  'Client/Stakeholder interview',
+  'Cultural interview',
+  'Leadership interview',
+])
+
+/** Derive the current active stage name for a list of stages */
+function getCurrentStage(stages: { stage: string; status: string }[]): string {
+  const ordered = SELECTION_STAGES.map(name => stages.find(s => s.stage === name)).filter(Boolean) as { stage: string; status: string }[]
+  // Priority: scheduled first, then last completed, then first pending
+  const scheduled = ordered.find(s => s.status === 'scheduled')
+  if (scheduled) return scheduled.stage
+  const completed = [...ordered].reverse().find(s => s.status === 'completed')
+  if (completed) return completed.stage
+  return ordered[0]?.stage ?? 'Application submitted'
+}
+
 router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
   const results = await db.select().from(candidatures).where(eq(candidatures.userId, req.userId!))
-  res.json(results)
+
+  if (results.length === 0) { res.json([]); return }
+
+  // Fetch all stages for this user's candidatures in one query
+  const allStages = await db
+    .select({ candidatureId: candidatureStages.candidatureId, stage: candidatureStages.stage, status: candidatureStages.status })
+    .from(candidatureStages)
+    .where(inArray(candidatureStages.candidatureId, results.map(c => c.id)))
+
+  // Group stages by candidature id
+  const stageMap = new Map<string, { stage: string; status: string }[]>()
+  for (const s of allStages) {
+    if (!stageMap.has(s.candidatureId)) stageMap.set(s.candidatureId, [])
+    stageMap.get(s.candidatureId)!.push(s)
+  }
+
+  const enriched = results.map(c => ({
+    ...c,
+    currentStage: getCurrentStage(stageMap.get(c.id) ?? []),
+    isInInterview: INTERVIEW_STAGES.has(getCurrentStage(stageMap.get(c.id) ?? [])),
+  }))
+
+  res.json(enriched)
 })
 
 router.get('/:id', requireAuth, async (req: AuthRequest, res: Response) => {
