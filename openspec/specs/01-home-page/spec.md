@@ -51,10 +51,21 @@ The Home page is the landing page after login. It gives users a clear snapshot o
 
 ## Acceptance Criteria
 
-- [ ] Home page is shown immediately after login
-- [ ] Welcome message includes the user's first name
-- [ ] Stats panel shows correct totals from the database
-- [ ] Active candidatures list is rendered with title, company, stage, and match %
-- [ ] Empty state is shown when there are no candidatures
-- [ ] All 3 quick-action shortcuts navigate to the correct pages
-- [ ] Page is accessible from the navigation menu at all times
+- [x] Home page is shown immediately after login
+- [x] Welcome message includes the user's first name
+- [x] Stats panel shows correct totals from the database
+- [x] Active candidatures list is rendered with title, company, stage, and match %
+- [x] Empty state is shown when there are no candidatures
+- [x] All 3 quick-action shortcuts navigate to the correct pages
+- [x] Page is accessible from the navigation menu at all times
+
+## Implementation
+
+**Status:** ✅ Implemented — 2026-05-26  
+**Commit:** `feat(home): implement spec 01 — Home Page dashboard`
+
+**Notes:**
+- Current stage is derived from `candidature_stages` table (not just candidature `status`)
+- Interview count correctly uses active stage name, not top-level status field
+- Match % is colour-coded: green ≥75%, amber ≥50%, red <50%
+- Mobile bottom nav added alongside desktop sidebar
